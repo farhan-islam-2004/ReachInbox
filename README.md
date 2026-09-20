@@ -26,29 +26,29 @@ flowchart TD
     Client["Client / React Frontend (Port 5173)"] -->|Google OAuth 2.0 / Session Cookie| Express["Express API (Port 4000)"]
 
     subgraph AuthMultiTenancy["Authentication & Multi-Tenancy"]
-        Express -->|Validate Session / sub| Postgres[("PostgreSQL DB (Port 5432)")]
+        Express -->|Validate Session / sub| Postgres["PostgreSQL DB (Port 5432)"]
         Express -->|requireAuth Guard| SecurityCheck{"Ownership Guard"}
         SecurityCheck -->|Scope by userId| UserResources["Campaigns / Senders / Emails"]
     end
 
     subgraph StorageDispatch["Storage & Dispatch Pipeline"]
         Express -->|1. Authoritative DB Writes| Postgres
-        Express -->|2. Delayed Job Enqueue| Redis[("Redis Engine (Port 6379)")]
+        Express -->|2. Delayed Job Enqueue| Redis["Redis Engine (Port 6379)"]
         Redis --> BullMQ["BullMQ emailQueue"]
     end
 
     subgraph WorkerDelivery["Worker & Delivery Execution"]
         BullMQ -->|Pulls Delayed Job| Worker["Email Worker (Concurrency: 5)"]
         Worker -->|Atomic Rate-Limit & Delay Lua| Redis
-        Worker -->|Atomic Claim: SCHEDULED -> PROCESSING| Postgres
+        Worker -->|Atomic Claim: SCHEDULED to PROCESSING| Postgres
         Worker -->|Real SMTP Dispatch| Ethereal["Ethereal SMTP Relay"]
         Worker -->|Finalize SENT + messageId| Postgres
     end
 
     subgraph SearchMonitoringAlert["Search, Monitoring & Alert"]
-        Worker -.->|Async Non-blocking Index (userId scoped)| ES[("Elasticsearch 9.x (Port 9200)")]
-        Worker -.->|Deduplicated Alert via SET NX 3600| Slack["Slack API / Webhooks"]
-        BullBoard["Bull Board Dashboard (/admin/queues)"] -.->|Queue Observability| Redis
+        Worker -->|Async Non-blocking Index - userId scoped| ES["Elasticsearch 9.x (Port 9200)"]
+        Worker -->|Deduplicated Alert via SET NX 3600| Slack["Slack API / Webhooks"]
+        BullBoard["Bull Board Dashboard (/admin/queues)"] -->|Queue Observability| Redis
     end
 ```
 
