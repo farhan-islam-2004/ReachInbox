@@ -10,6 +10,7 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
   REDIS_HOST: z.string().default('localhost'),
   REDIS_PORT: z.coerce.number().default(6379),
+  REDIS_URL: z.string().optional(),
   WORKER_CONCURRENCY: z.coerce.number().int().positive().default(5),
   MAX_EMAILS_PER_HOUR: z.coerce.number().int().positive().default(50),
   MIN_EMAIL_DELAY_MS: z.coerce.number().int().nonnegative().default(2000),

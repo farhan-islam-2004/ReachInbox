@@ -40,8 +40,11 @@ elasticsearchService
     console.warn('[Elasticsearch] Warning during startup index check:', err.message);
   });
 
-// Start BullMQ worker
-const worker = startEmailWorker();
+// Start BullMQ worker (unless separated via START_WORKER=false in production)
+let worker: any = null;
+if (process.env.START_WORKER !== 'false') {
+  worker = startEmailWorker();
+}
 
 let isShuttingDown = false;
 
@@ -53,7 +56,9 @@ const handleShutdown = async (signal: string) => {
   server.close(async () => {
     console.log('HTTP server closed.');
     try {
-      await closeEmailWorker();
+      if (worker) {
+        await closeEmailWorker();
+      }
       await closeEmailQueue();
       await closeRedisConnection();
       console.log('BullMQ worker and queues closed cleanly.');

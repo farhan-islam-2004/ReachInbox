@@ -13,6 +13,9 @@ import { errorHandler } from './middleware/error.middleware';
 
 const app = express();
 
+// Trust reverse proxy (Railway SSL termination) for secure cookies and headers
+app.set('trust proxy', 1);
+
 // Security and utility middleware
 app.use(
   helmet({

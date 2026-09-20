@@ -66,11 +66,11 @@ export const googleCallbackController = async (
     // 4. Create new persistent server-side session in PostgreSQL
     const session = await authService.createSession(user.id);
 
-    // 5. Attach HTTP-only session cookie
+    // 5. Attach HTTP-only session cookie (sameSite: 'none' for cross-site Railway frontend/backend)
     res.cookie(SESSION_COOKIE_NAME, session.id, {
       httpOnly: true,
       secure: env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: '/',
     });
@@ -129,7 +129,12 @@ export const logoutController = async (
       await authService.destroySession(req.sessionId);
     }
 
-    res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
+    res.clearCookie(SESSION_COOKIE_NAME, {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
+    });
 
     res.status(200).json({
       success: true,
