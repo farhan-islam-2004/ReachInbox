@@ -59,6 +59,7 @@ export class EmailSenderService {
         auth: user && pass ? { user, pass } : undefined,
         tls: {
           rejectUnauthorized: false,
+          checkServerIdentity: () => undefined,
           servername: 'smtp.ethereal.email',
         },
       });
