@@ -40,9 +40,11 @@ elasticsearchService
     console.warn('[Elasticsearch] Warning during startup index check:', err.message);
   });
 
-// Start BullMQ worker (unless separated via START_WORKER=false in production)
+// BullMQ worker runs in a dedicated worker process (worker.ts), never inside the web server in production
 let worker: any = null;
-if (process.env.START_WORKER !== 'false') {
+if (env.NODE_ENV !== 'production' && process.env.START_WORKER !== 'false') {
+  worker = startEmailWorker();
+} else if (process.env.START_WORKER === 'true') {
   worker = startEmailWorker();
 }
 

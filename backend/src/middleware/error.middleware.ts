@@ -11,6 +11,7 @@ export const errorHandler: ErrorRequestHandler = (
   res: Response,
   _next: NextFunction
 ): void => {
+  console.error('[Error Middleware]', err);
   const statusCode = err.statusCode && err.statusCode >= 400 && err.statusCode < 600 ? err.statusCode : 500;
   const isProduction = env.NODE_ENV === 'production';
 
