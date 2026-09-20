@@ -57,6 +57,10 @@ export class EmailSenderService {
         port: env.ETHEREAL_PORT,
         secure: env.ETHEREAL_SECURE,
         auth: user && pass ? { user, pass } : undefined,
+        tls: {
+          rejectUnauthorized: false,
+          servername: 'smtp.ethereal.email',
+        },
       });
 
       this.transporters.set(cacheKey, transporter);
