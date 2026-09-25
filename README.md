@@ -405,7 +405,7 @@ cd frontend && npm run dev
 
 ### 3. Schedule an Email
 1. Click the **"Compose"** button in the sidebar.
-2. Select your authenticated sender from the **From** dropdown (`farhanrohit2004@gmail.com`).
+2. Select your authenticated sender from the **From** dropdown.
 3. Enter recipient address, subject, and rich message body.
 4. Configure inter-email delay (default: 2,000ms) and hourly limit (default: 50).
 5. Pick a schedule time or leave blank for immediate dispatch, then click **"Schedule Email"**.
